@@ -68,7 +68,9 @@ namespace SGcombo.TaskContainer
             }
 
         }
-
+        /// <summary>
+        ///   Wait All tasks from container
+        /// </summary>
         public void WaitAll()
         {
             while (TasksContainer.Count > 0)
@@ -154,16 +156,7 @@ namespace SGcombo.TaskContainer
         {
             task.ContinueWith(t1 =>
             {
-                try
-                {
-                    TaskItem outItem;
-                    TasksContainer.TryRemove(t1.Id, out outItem);
-                    t1.Dispose();
-                }
-                catch (Exception ex)
-                { 
-
-                }
+                Remove(t1);
             });
             String TaskName = task.Id.ToString();
             int Task_ID = task.Id;
@@ -182,12 +175,35 @@ namespace SGcombo.TaskContainer
 
             if (ok)
             {
-                task.Start();
-
-                return true;
+                try
+                {
+                    task.Start();
+                    return true;
+                } catch
+                {
+                    Remove(task);
+                    return false;
+                }
             }
             return false;
         }
 
+        /// <summary>
+        ///   Remove task from container
+        /// </summary>
+        /// <param name="task"></param>
+        public void Remove(Task task)
+        {
+            try
+            {
+                TaskItem outItem;
+                TasksContainer.TryRemove(task.Id, out outItem);
+                task.Dispose();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
     }
 }

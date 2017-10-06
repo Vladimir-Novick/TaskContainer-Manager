@@ -7,7 +7,6 @@ using System.Collections.Generic;
 namespace SGcombo.TaskContainer
 {
 
-
     ////////////////////////////////////////////////////////////////////////////
     //	Copyright 2017 : Vladimir Novick    https://www.linkedin.com/in/vladimirnovick/  
     //        
@@ -19,20 +18,16 @@ namespace SGcombo.TaskContainer
     //
     ////////////////////////////////////////////////////////////////////////////
 
-
     /// <summary>
     ///    Running multiple tasks asynchronously
     /// </summary>
     public class TaskContainerManager
     {
 
-
         public TaskContainerManager()
         {
 
         }
-
-        
 
         private class TaskItem
         {
@@ -51,7 +46,6 @@ namespace SGcombo.TaskContainer
                 return
                     taskItem.task_.Id != task.Id;
             }
-
 
             public override bool Equals(Object task)
             {
@@ -73,19 +67,24 @@ namespace SGcombo.TaskContainer
                 return this.task_.GetHashCode();
             }
 
-
         }
-
 
         public void WaitAll()
         {
-            List<Task> TaskList = new List<Task>();
-            foreach ( var item in TasksContainer.Values)
+            while (TasksContainer.Count > 0)
             {
-                TaskList.Add(item.task_);
-            }
+                try
+                {
+                    List<Task> TaskList = new List<Task>();
+                    foreach (var item in TasksContainer.Values)
+                    {
+                        TaskList.Add(item.task_);
+                    }
 
-            Task.WaitAll(TaskList.ToArray());
+                    Task.WaitAny(TaskList.ToArray());
+                }
+                catch { }
+            }
 
         }
 
@@ -114,8 +113,6 @@ namespace SGcombo.TaskContainer
             }
             return true;
         }
-
-
 
         /// <summary>
         ///    Add a task to container
@@ -161,7 +158,6 @@ namespace SGcombo.TaskContainer
             }
             return false;
         }
-
 
     }
 }

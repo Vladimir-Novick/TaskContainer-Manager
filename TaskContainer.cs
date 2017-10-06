@@ -106,12 +106,42 @@ namespace SGcombo.TaskContainer
         /// <returns></returns>
         public bool IsCompleted(String name)
         {
-           TaskItem item =  TasksContainer.Values.FirstOrDefault(x => x.taskName == name);
-            if (item != null)
+            try
             {
-                return false;
+                if (TasksContainer.Count > 0)
+                {
+                    TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.taskName == name);
+                    if (item != null)
+                    {
+                        return false;
+                    }
+                }
             }
+            catch { }
             return true;
+        }
+        /// <summary>
+        ///   Get task status by task name
+        /// </summary>
+        /// <param name="TaskName"></param>
+        /// <returns></returns>
+        public TaskStatus Status(String TaskName)
+        {
+            try
+            {
+                if (TasksContainer.Count > 0)
+                {
+                    TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.taskName == TaskName);
+                    if (item != null)
+                    {
+                        Task task = item.task_;
+                        if (task == null) return TaskStatus.RanToCompletion;
+                        return task.Status;
+                    }
+                }
+            }
+            catch { }
+            return TaskStatus.RanToCompletion;
         }
 
         /// <summary>

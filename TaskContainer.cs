@@ -29,42 +29,57 @@ namespace SGcombo.TaskContainer
 
         }
 
+        public TaskContainerManager(Func<string,bool> CallBackExit)
+        {
+            CallBackFunction = CallBackExit;
+        }
+
+        private Func<string,bool> CallBackFunction = null;
+
+
         private class TaskItem
         {
-            public String taskName { get; set; }
+            public String TaskName { get; set; }
             public int Id { get; set; }
-            public Task task_ { get; set; }
+            public Task Task_ { get; set; }
+            private int HashCode { get; set;  }
 
             public static bool operator == (TaskItem taskItem, Task task)
             {
+                if (!(task is Task)) return false;
+                if (task == null) return false;
                 return
-                    taskItem.task_.Id == task.Id;
+                    taskItem.Id == task.Id;
             }
 
             public static bool operator !=(TaskItem taskItem, Task task)
             {
+                if (!(task is Task)) return true;
+                if (task == null) return true;
                 return
-                    taskItem.task_.Id != task.Id;
+                    taskItem.Id != task.Id;
             }
 
             public override bool Equals(Object task)
             {
+                if (!(task is Task)) return false;
+                if (task == null) return false;
                 Task item = task as Task;
                 if (item != null)
                 {
-                    return this.task_.Id == item.Id;
+                    return this.Id == item.Id;
                 }
                 TaskItem taskItem = task as TaskItem;
                 if (taskItem != null)
                 {
-                    return this.task_.Id == taskItem.task_.Id;
+                    return this.Id == taskItem.Id;
                 }
                 return false;
             }
 
             public override int GetHashCode()
             {
-                return this.task_.GetHashCode();
+                return this.Task_.GetHashCode();
             }
 
         }
@@ -80,7 +95,7 @@ namespace SGcombo.TaskContainer
                     List<Task> TaskList = new List<Task>();
                     foreach (var item in TasksContainer.Values)
                     {
-                        TaskList.Add(item.task_);
+                        TaskList.Add(item.Task_);
                     }
 
                     Task.WaitAny(TaskList.ToArray());
@@ -112,7 +127,7 @@ namespace SGcombo.TaskContainer
             {
                 if (TasksContainer.Count > 0)
                 {
-                    TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.taskName == name);
+                    TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == name);
                     if (item != null)
                     {
                         return false;
@@ -133,10 +148,11 @@ namespace SGcombo.TaskContainer
             {
                 if (TasksContainer.Count > 0)
                 {
-                    TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.taskName == TaskName);
+                    List<TaskItem> items = TasksContainer.Values.ToList<TaskItem>();
+                    TaskItem item = items.FirstOrDefault(x => x.TaskName == TaskName);
                     if (item != null)
                     {
-                        Task task = item.task_;
+                        Task task = item.Task_;
                         if (task == null) return TaskStatus.RanToCompletion;
                         return task.Status;
                     }
@@ -156,19 +172,24 @@ namespace SGcombo.TaskContainer
         {
             task.ContinueWith(t1 =>
             {
-                Remove(t1);
+               String Name =  Remove(t1);
+                if (CallBackFunction != null)
+                {
+                   
+                    CallBackFunction(Name);
+                }
             });
-            String TaskName = task.Id.ToString();
+            String _TaskName = task.Id.ToString();
             int Task_ID = task.Id;
             if (taskName != null)
             {
-                TaskName = taskName;
+                _TaskName = taskName;
             }
             var taskItem = new TaskItem
             {
-                taskName = TaskName,
+                TaskName = _TaskName,
                 Id = task.Id,
-                task_ = task
+                Task_ = task
             };
 
             bool ok = TasksContainer.TryAdd(taskItem.Id, taskItem);
@@ -189,21 +210,29 @@ namespace SGcombo.TaskContainer
         }
 
         /// <summary>
-        ///   Remove task from container
+        ///    Remove task from container
         /// </summary>
         /// <param name="task"></param>
-        public void Remove(Task task)
+        /// <returns>TaskItem</returns>
+        public String Remove(Task task)
         {
+            TaskItem outItem = null;
+            String TaskName = null;
             try
             {
-                TaskItem outItem;
+               
                 TasksContainer.TryRemove(task.Id, out outItem);
+                if (outItem != null)
+                {
+                    TaskName = outItem.TaskName;
+                }
                 task.Dispose();
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
 
             }
+            return TaskName;
         }
     }
 }

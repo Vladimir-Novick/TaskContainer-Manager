@@ -44,18 +44,23 @@ namespace SGcombo.TaskContainer
             public Task Task_ { get; set; }
             private int HashCode { get; set;  }
 
-            public static bool operator == (TaskItem taskItem, Task task)
+            public static bool operator ==(TaskItem taskItem, Task task)
             {
+                if ((task == null) && (taskItem as Object != null)) return false;
+                if ((task == null) && (taskItem as Object == null)) return true;
                 if (!(task is Task)) return false;
-                if (task == null) return false;
                 return
                     taskItem.Id == task.Id;
             }
 
+
             public static bool operator !=(TaskItem taskItem, Task task)
             {
+
+                if ((task == null) && (taskItem as Object != null)) return true;
+                if ((task == null) && (taskItem as Object == null)) return false;
+
                 if (!(task is Task)) return true;
-                if (task == null) return true;
                 return
                     taskItem.Id != task.Id;
             }
@@ -128,7 +133,7 @@ namespace SGcombo.TaskContainer
                 if (TasksContainer.Count > 0)
                 {
                     TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == name);
-                    if (item != null)
+                    if (item is null)
                     {
                         return false;
                     }

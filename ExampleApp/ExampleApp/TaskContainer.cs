@@ -29,12 +29,12 @@ namespace SGcombo.TaskContainer
 
         }
 
-        public TaskContainerManager(Func<string,bool> CallBackExit)
+        public TaskContainerManager(Func<string, bool> CallBackExit)
         {
             CallBackFunction = CallBackExit;
         }
 
-        private Func<string,bool> CallBackFunction = null;
+        private Func<string, bool> CallBackFunction = null;
 
 
         private class TaskItem
@@ -42,7 +42,7 @@ namespace SGcombo.TaskContainer
             public String TaskName { get; set; }
             public int Id { get; set; }
             public Task Task_ { get; set; }
-            private int HashCode { get; set;  }
+            private int HashCode { get; set; }
 
             public static bool operator ==(TaskItem taskItem, Task task)
             {
@@ -133,7 +133,7 @@ namespace SGcombo.TaskContainer
                 if (TasksContainer.Count > 0)
                 {
                     TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == name);
-                    if (item is null)
+                    if (item != null)
                     {
                         return false;
                     }
@@ -177,10 +177,10 @@ namespace SGcombo.TaskContainer
         {
             task.ContinueWith(t1 =>
             {
-               String Name =  Remove(t1);
+                String Name = Remove(t1);
                 if (CallBackFunction != null)
                 {
-                   
+
                     CallBackFunction(Name);
                 }
             });
@@ -197,6 +197,13 @@ namespace SGcombo.TaskContainer
                 Task_ = task
             };
 
+
+
+            List<TaskItem> items = TasksContainer.Values.ToList<TaskItem>();
+            TaskItem item = items.FirstOrDefault(x => x.TaskName == _TaskName);
+
+            if (!(item is null)) return false;
+
             bool ok = TasksContainer.TryAdd(taskItem.Id, taskItem);
 
             if (ok)
@@ -205,7 +212,8 @@ namespace SGcombo.TaskContainer
                 {
                     task.Start();
                     return true;
-                } catch
+                }
+                catch
                 {
                     Remove(task);
                     return false;
@@ -223,9 +231,10 @@ namespace SGcombo.TaskContainer
         {
             TaskItem outItem = null;
             String TaskName = null;
+            if (task == null) return null;
             try
             {
-               
+
                 TasksContainer.TryRemove(task.Id, out outItem);
                 if (outItem != null)
                 {
@@ -233,7 +242,7 @@ namespace SGcombo.TaskContainer
                 }
                 task.Dispose();
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
 
             }

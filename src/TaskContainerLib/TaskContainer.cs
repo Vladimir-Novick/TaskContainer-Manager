@@ -102,19 +102,27 @@ namespace TaskContainerLib
         {
             while (TasksContainer.Count > 0)
             {
-                try
-                {
-                    List<Task> TaskList = new List<Task>();
-                    foreach (var item in TasksContainer.Values)
-                    {
-                        TaskList.Add(item.Task_);
-                    }
-
-                    Task.WaitAny(TaskList.ToArray());
-                }
-                catch { }
+                WaitAny();
             }
 
+        }
+
+        /// <summary>
+        ///   Wait Any Task
+        /// </summary>
+        public void WaitAny()
+        {
+            try
+            {
+                List<Task> TaskList = new List<Task>();
+                foreach (var item in TasksContainer.Values)
+                {
+                    TaskList.Add(item.Task_);
+                }
+
+                Task.WaitAny(TaskList.ToArray());
+            }
+            catch { }
         }
 
         private ConcurrentDictionary<int, TaskItem> TasksContainer = new ConcurrentDictionary<int, TaskItem>();

@@ -14,10 +14,21 @@ namespace UnitTest
 
         public static bool OnTaskExiFunctiont(String TaskName)
         {
-            System.Diagnostics.Debug.WriteLine($"Task Completed : {TaskName} , TaskConteiner count {taskContainer.Count()}");
-            Thread.Sleep(2000);
+            System.Diagnostics.Debug.WriteLine($"Task Completed : {TaskName} , Task Conteiner count {taskContainer.Count()}");
             return true;
         }
+
+
+        public void WaitAllTask()
+        {
+            while (taskContainer.Count() > 0)
+            {
+                System.Diagnostics.Debug.WriteLine($" Task Completed ");
+                taskContainer.WaitAny();
+            }
+
+        }
+
 
         private static void PrintMessage(int j)
         {
@@ -41,7 +52,7 @@ namespace UnitTest
                 Task task = new Task(() => { PrintMessage(ii); });  // Create Task
                 taskContainer.TryAdd(task);  // Add task to Container . Task will be start automatically
             }
-            taskContainer.WaitAll();  // Wait all scheduled tasks
+            WaitAllTask();  // Wait all scheduled tasks
         }
 
 
@@ -58,7 +69,7 @@ namespace UnitTest
                 Task task = new Task(() => { PrintMessage(ii); });  // Create Task
                 taskContainer.TryAdd(task);  // Add task to Container . Task will be start automatically
             }
-            taskContainer.WaitAll();  // Wait all scheduled tasks
+            WaitAllTask();  // Wait all scheduled tasks
         }
 
         [TestMethod]

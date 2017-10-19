@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Runtime;
 
 namespace SGcombo.TaskContainer
 {
@@ -178,6 +179,7 @@ namespace SGcombo.TaskContainer
             task.ContinueWith(t1 =>
             {
                 String Name = Remove(t1);
+				GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                 if (CallBackFunction != null)
                 {
 

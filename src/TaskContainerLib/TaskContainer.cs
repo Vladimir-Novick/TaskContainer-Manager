@@ -5,19 +5,9 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime;
 
-namespace SGcombo.TaskContainer
+namespace TaskContainerLib
 {
 
-    ////////////////////////////////////////////////////////////////////////////
-    //	Copyright 2017 : Vladimir Novick    https://www.linkedin.com/in/vladimirnovick/  
-    //        
-    //             https://github.com/Vladimir-Novick/TaskContainer-Manager
-    //
-    //    NO WARRANTIES ARE EXTENDED. USE AT YOUR OWN RISK. 
-    //
-    // To contact the author with suggestions or comments, use  :vlad.novick@gmail.com
-    //
-    ////////////////////////////////////////////////////////////////////////////
 
     /// <summary>
     ///    Running multiple tasks asynchronously
@@ -25,18 +15,34 @@ namespace SGcombo.TaskContainer
     public class TaskContainerManager
     {
 
+        /// <summary>
+        ///   Specify Task Manager option. Multiple Conditions with  || TaskContainerManager Options
+        /// </summary>
+        [Flags] // indicates bitwise operations occur on this enum
+        public enum Options : byte
+        {
+            None = 0,
+            LargeObjectHeapCompactionMode =  1,
+            GCCollect =  2
+        }
+
         public TaskContainerManager()
         {
-
+            OnTaskExit = null;
         }
 
-        public TaskContainerManager(Func<string, bool> CallBackExit)
-        {
-            CallBackFunction = CallBackExit;
-        }
+        /// <summary>
+        ///   Add Task Manager option. Multiple Conditions with  || TaskContainerManager Options
+        /// </summary>
+        public Options Option { private get; set; }
+        
 
-        private Func<string, bool> CallBackFunction = null;
-
+        /// <summary>
+        ///    Add Task OnExit Function
+        /// </summary>
+        /// <param name="CallBackExit"></param>
+        public Func<string, bool> OnTaskExit { private get; set; }
+      
 
         private class TaskItem
         {
@@ -179,11 +185,22 @@ namespace SGcombo.TaskContainer
             task.ContinueWith(t1 =>
             {
                 String Name = Remove(t1);
-				GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-                if (CallBackFunction != null)
+
+                if ((TaskContainerManager.Options.LargeObjectHeapCompactionMode & this.Option) == TaskContainerManager.Options.LargeObjectHeapCompactionMode)
+                {
+                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                }
+
+
+                if ((TaskContainerManager.Options.GCCollect & this.Option) == TaskContainerManager.Options.GCCollect)
+                {
+                    GC.Collect();
+                }
+
+                if (OnTaskExit != null)
                 {
 
-                    CallBackFunction(Name);
+                    OnTaskExit(Name);
                 }
             });
             String _TaskName = task.Id.ToString();

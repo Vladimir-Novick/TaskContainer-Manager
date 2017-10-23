@@ -4,16 +4,19 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime;
+using System.Reflection;
 
 namespace TaskContainerLib
 {
-
+    
 
     /// <summary>
     ///    Running multiple tasks asynchronously
     /// </summary>
     public class TaskContainerManager
     {
+
+        
 
         /// <summary>
         ///   Specify Task Manager option. Multiple Conditions with  || TaskContainerManager Options
@@ -42,13 +45,28 @@ namespace TaskContainerLib
         /// </summary>
         /// <param name="CallBackExit"></param>
         public Func<string, bool> OnTaskExit { private get; set; }
-      
+
+
+        public class TaskItemStatus
+        {
+            public String TaskName { get; set; }
+            public String Description { get; set; }
+            public DateTime StartTime { get; set; }
+
+            public TaskStatus TaskStatus { get; set;  }
+
+        }
+
 
         private class TaskItem
         {
             public String TaskName { get; set; }
             public int Id { get; set; }
             public Task Task_ { get; set; }
+
+            public String Description { get; set; }
+
+            public DateTime StartTime { get; set; }
             private int HashCode { get; set; }
 
             public static bool operator ==(TaskItem taskItem, Task task)
@@ -106,6 +124,54 @@ namespace TaskContainerLib
             }
 
         }
+
+        /// <summary>
+        ///    Get all active task
+        /// </summary>
+        /// <returns></returns>
+        public List<TaskItemStatus> GetStatuses()
+        {
+            List<TaskItemStatus> TaskList = new List<TaskItemStatus>();
+            try
+            {
+              
+                foreach (var item in TasksContainer.Values)
+                {
+                    try
+                    {
+                        TaskItemStatus itemStatus = new TaskItemStatus()
+                        {
+                            TaskName = item.TaskName,
+                            Description = item.Description,
+                            StartTime = item.StartTime
+                           
+                        };
+                        if (item.Task_ == null)
+                        {
+                            itemStatus.TaskStatus = TaskStatus.Canceled;
+                        }
+                        else
+                        {
+                            try
+                            {
+                                itemStatus.TaskStatus = item.Task_.Status;
+                            } catch ( Exception)
+                            {
+                                itemStatus.TaskStatus = TaskStatus.Canceled;
+                            }
+                        }
+
+                        TaskList.Add(itemStatus);
+                    }
+                    catch (Exception) { }
+                }
+
+              
+            }
+            catch { }
+            return TaskList;
+        }
+
 
         /// <summary>
         ///   Wait Any Task
@@ -188,7 +254,7 @@ namespace TaskContainerLib
         /// <param name="task"></param>
         /// <param name="taskName"></param>
         /// <returns>true/false - task is active</returns>
-        public bool TryAdd(Task task, String taskName = null)
+        public bool TryAdd(Task task, String taskName = null, String description = null )
         {
             task.ContinueWith(t1 =>
             {
@@ -211,17 +277,39 @@ namespace TaskContainerLib
                     OnTaskExit(Name);
                 }
             });
-            String _TaskName = task.Id.ToString();
+            String _TaskName = $"Task: {task.Id}";
+
+            String _description = description;
+
+
             int Task_ID = task.Id;
             if (taskName != null)
             {
                 _TaskName = taskName;
+            } 
+            if (_description == null)
+            {
+                try
+                {
+                    var fieldInfo = typeof(Task).GetField("m_action", BindingFlags.Instance | BindingFlags.NonPublic);
+                    Delegate action = fieldInfo.GetValue(task) as Delegate;
+                    if ( action != null )
+                    {
+                        var name = action.Method.Name;
+                        var type = action.Method.DeclaringType.FullName;
+                        _description = $"Method: {name} Type: {type}";
+                    
+                        
+                    } 
+                }
+                catch (Exception) { }
             }
             var taskItem = new TaskItem
             {
                 TaskName = _TaskName,
                 Id = task.Id,
-                Task_ = task
+                Task_ = task,
+                StartTime = DateTime.Now
             };
 
 
@@ -237,7 +325,9 @@ namespace TaskContainerLib
             {
                 try
                 {
+                   
                     task.Start();
+
                     return true;
                 }
                 catch

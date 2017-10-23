@@ -14,16 +14,26 @@ namespace UnitTest
 
         public static bool OnTaskExiFunctiont(String TaskName)
         {
-            System.Diagnostics.Debug.WriteLine($"Task Completed : {TaskName} , Task Conteiner count {taskContainer.Count()}");
+            Console.WriteLine($"Task Completed : {TaskName} , Task Conteiner count {taskContainer.Count()}");
             return true;
         }
 
+
+        public static bool OnTaskExiFunctiont2(String TaskName)
+        {
+            var statuses = taskContainer.GetStatuses();
+            foreach (var p in statuses)
+            {
+                Console.WriteLine($" task: {p.TaskName}, start time: {p.StartTime} , status: {p.TaskStatus}");
+            }
+            return true;
+        }
 
         public void WaitAllTask()
         {
             while (taskContainer.Count() > 0)
             {
-                System.Diagnostics.Debug.WriteLine($" Task Completed ");
+                Console.WriteLine($" Task Completed ");
                 taskContainer.WaitAny();
             }
 
@@ -34,7 +44,7 @@ namespace UnitTest
         {
             for (int i = 1; i < 10; i++)
             {
-                System.Diagnostics.Debug.WriteLine($"TaskContainerManager {j} > {i}");
+                Console.WriteLine($"Task {j} > {i}");
                 Thread.Sleep(j * 400);
             }
         }
@@ -42,7 +52,7 @@ namespace UnitTest
         [TestMethod]
         public void MultiTask()
         {
-
+            Console.WriteLine("--------------------MultiTask --------------------");
             taskContainer.OnTaskExit = null;
             taskContainer.Option = TaskContainerManager.Options.None;
 
@@ -52,14 +62,14 @@ namespace UnitTest
                 Task task = new Task(() => { PrintMessage(ii); });  // Create Task
                 taskContainer.TryAdd(task);  // Add task to Container . Task will be start automatically
             }
-            WaitAllTask();  // Wait all scheduled tasks
+            taskContainer.WaitAll();  // Wait all scheduled tasks
         }
 
 
         [TestMethod]
         public void OnTaskExit()
         {
-
+            Console.WriteLine("--------------------OnTaskExit --------------------");
             taskContainer.OnTaskExit = OnTaskExiFunctiont;
             taskContainer.Option = TaskContainerManager.Options.None;
 
@@ -69,12 +79,13 @@ namespace UnitTest
                 Task task = new Task(() => { PrintMessage(ii); });  // Create Task
                 taskContainer.TryAdd(task);  // Add task to Container . Task will be start automatically
             }
-            WaitAllTask();  // Wait all scheduled tasks
+            taskContainer.WaitAll(); // Wait all scheduled tasks
         }
 
         [TestMethod]
         public void AddOptions()
         {
+            Console.WriteLine("--------------------AddOptions --------------------");
             taskContainer.OnTaskExit = null;
             taskContainer.Option = TaskContainerManager.Options.LargeObjectHeapCompactionMode | TaskContainerManager.Options.GCCollect;
 
@@ -86,5 +97,23 @@ namespace UnitTest
             }
             taskContainer.WaitAll();  // Wait all scheduled tasks
         }
+
+
+        [TestMethod]
+        public void OnTaskStatuses()
+        {
+            Console.WriteLine("--------------------OnTaskStatuses --------------------");
+            taskContainer.OnTaskExit = OnTaskExiFunctiont2;
+            taskContainer.Option = TaskContainerManager.Options.None;
+
+            for (int i = 1; i < 5; i++)
+            {
+                int ii = i;
+                Task task = new Task(() => { PrintMessage(ii); });  // Create Task
+                taskContainer.TryAdd(task);  // Add task to Container . Task will be start automatically
+            }
+            taskContainer.WaitAll();  // Wait all scheduled tasks
+        }
+
     }
 }

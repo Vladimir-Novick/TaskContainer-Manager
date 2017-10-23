@@ -309,7 +309,8 @@ namespace TaskContainerLib
                 TaskName = _TaskName,
                 Id = task.Id,
                 Task_ = task,
-                StartTime = DateTime.Now
+                StartTime = DateTime.Now,
+                Description = _description
             };
 
 

@@ -124,6 +124,36 @@ namespace TaskContainerLib
             }
 
         }
+        /// <summary>
+        ///   Wait all task by specifications list
+        /// </summary>
+        /// <param name="taskNames"></param>
+        public void WaitAll(List<String> taskNames)
+        {
+            try
+            {
+
+                List<Task> TaskList = new List<Task>();
+                foreach (TaskItem item in TasksContainer.Values)
+                {
+                    try
+                    {
+                        var ok = taskNames.Find(m => m == item.TaskName);
+                        if (ok != null)
+                        {
+                            if (item.Task_ != null)
+                            {
+                                TaskList.Add(item.Task_);
+                            }
+                        }
+                    }
+                    catch (Exception) { }
+                }
+
+                Task.WaitAll(TaskList.ToArray());
+            }
+            catch { }
+        }
 
         /// <summary>
         ///    Get all active task

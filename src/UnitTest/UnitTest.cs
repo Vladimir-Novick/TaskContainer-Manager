@@ -49,6 +49,18 @@ namespace UnitTest
             }
         }
 
+        private static void PrintMessage(int j, string taskName)
+        {
+            for (int i = 1; i < 10; i++)
+            {
+                Console.WriteLine($"{taskName} > {i}");
+                taskContainer.SetCurrentStatus(taskName, $"inprogress {i}");
+                String currentStatus = taskContainer.GetCurrentStatus(taskName);
+                Console.WriteLine($"Task {taskName},  Current status > {currentStatus}");
+                Thread.Sleep(j * 400);
+            }
+        }
+
         [TestMethod]
         public void MultiTask()
         {
@@ -88,6 +100,24 @@ namespace UnitTest
             }
             taskContainer.WaitAll();  // Wait all scheduled tasks
         }
+
+        [TestMethod]
+        public void SetCurrentStatus()
+        {
+            Console.WriteLine("--------------------SetCurrentStatus --------------------");
+            taskContainer.OnTaskExit = null;
+            taskContainer.Option = TaskContainerManager.Options.None;
+
+            for (int i = 1; i < 5; i++)
+            {
+                int ii = i;
+                string taskName = $"Task {ii}";
+                Task task = new Task(() => { PrintMessage(ii, taskName); });  // Create Task
+                taskContainer.TryAdd(task, taskName, $"Task Description {i}", CallBackFunction);  // Add task to Container . Task will be start automatically
+            }
+            taskContainer.WaitAll();  // Wait all scheduled tasks
+        }
+
 
 
         [TestMethod]

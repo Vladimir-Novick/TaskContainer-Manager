@@ -66,6 +66,8 @@ namespace TaskContainerLib
 
             public String Description { get; set; }
 
+            public String CurrentStatus { get; set; }
+
             public DateTime StartTime { get; set; }
             private int HashCode { get; set; }
 
@@ -160,6 +162,42 @@ namespace TaskContainerLib
             }
             catch { }
         }
+
+        /// <summary>
+        ///    Set Current Task Status 
+        /// </summary>
+        /// <param name="taskName"></param>
+        /// <param name="CurrentStatus"></param>
+        public void SetCurrentStatus(string taskName, String CurrentStatus)
+        {
+            if (TasksContainer.Count > 0)
+            {
+                TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == taskName);
+                if (item != null)
+                {
+                    item.CurrentStatus = CurrentStatus;
+                }
+            }
+        }
+
+        /// <summary>
+        ///    Get current task status string
+        /// </summary>
+        /// <param name="taskName"></param>
+        public string GetCurrentStatus(string taskName)
+        {
+          
+            if (TasksContainer.Count > 0)
+            {
+                TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == taskName);
+                if (item != null)
+                {
+                   return  item.CurrentStatus ;
+                }
+            }
+            return "Finished";
+        }
+
 
         /// <summary>
         ///    Get all active task
@@ -366,7 +404,8 @@ namespace TaskContainerLib
                 Task_ = task,
                 StartTime = DateTime.Now,
                 Description = _description,
-                Callback = callBack
+                Callback = callBack,
+                CurrentStatus = "Started"
             };
 
 

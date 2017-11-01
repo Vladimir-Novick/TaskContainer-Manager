@@ -66,6 +66,30 @@ namespace UnitTest
         }
 
 
+        public static bool CallBackFunction(String taskName)
+        {
+            Console.WriteLine($" ***** CallBack : {taskName}");
+            return true;
+        }
+
+
+        [TestMethod]
+        public void CallBackFunction()
+        {
+            Console.WriteLine("--------------------CallBackFunction --------------------");
+            taskContainer.OnTaskExit = null;
+            taskContainer.Option = TaskContainerManager.Options.None;
+
+            for (int i = 1; i < 5; i++)
+            {
+                int ii = i;
+                Task task = new Task(() => { PrintMessage(ii); });  // Create Task
+                taskContainer.TryAdd(task,$"Task {i}",$"Task Description {i}", CallBackFunction);  // Add task to Container . Task will be start automatically
+            }
+            taskContainer.WaitAll();  // Wait all scheduled tasks
+        }
+
+
         [TestMethod]
         public void OnTaskExit()
         {

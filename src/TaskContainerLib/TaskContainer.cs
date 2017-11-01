@@ -69,6 +69,12 @@ namespace TaskContainerLib
             public DateTime StartTime { get; set; }
             private int HashCode { get; set; }
 
+
+            /// <summary>
+            ///    Callback functions 
+            /// </summary>
+            public Func<String,bool> Callback;
+
             public static bool operator ==(TaskItem taskItem, Task task)
             {
                 if ((task == null) && (taskItem as Object != null)) return false;
@@ -283,11 +289,30 @@ namespace TaskContainerLib
         /// </summary>
         /// <param name="task"></param>
         /// <param name="taskName"></param>
-        /// <returns>true/false - task is active</returns>
-        public bool TryAdd(Task task, String taskName = null, String description = null )
+        /// <param name="description"></param>
+        /// <param name="callBack">   bool myCallBack(string taskName ) </param>
+        /// <returns></returns>
+        public bool TryAdd(Task task, String taskName = null, String description = null , Func<String,bool> callBack = null)
         {
             task.ContinueWith(t1 =>
             {
+
+                 TaskItem outTaskItem = null;
+               if ( TasksContainer.TryGetValue(task.Id, out outTaskItem))
+                {
+                    if (outTaskItem.Callback != null)
+                    {
+                        try
+                        {
+                            outTaskItem.Callback(outTaskItem.TaskName);
+                        }
+                        catch ( Exception ) { }
+                    }
+
+
+                }
+
+
                 String Name = Remove(t1);
 
                 if ((TaskContainerManager.Options.LargeObjectHeapCompactionMode & this.Option) == TaskContainerManager.Options.LargeObjectHeapCompactionMode)
@@ -340,7 +365,8 @@ namespace TaskContainerLib
                 Id = task.Id,
                 Task_ = task,
                 StartTime = DateTime.Now,
-                Description = _description
+                Description = _description,
+                Callback = callBack
             };
 
 
@@ -370,6 +396,9 @@ namespace TaskContainerLib
             return false;
         }
 
+
+
+
         /// <summary>
         ///    Remove task from container
         /// </summary>
@@ -390,7 +419,7 @@ namespace TaskContainerLib
                 }
                 task.Dispose();
             }
-            catch (Exception ex)
+            catch (Exception )
             {
 
             }

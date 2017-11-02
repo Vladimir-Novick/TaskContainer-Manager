@@ -49,11 +49,11 @@ namespace TaskContainerLib
 
         public class TaskItemStatus
         {
-            public String TaskName { get; set; }
+            public String Name { get; set; }
             public String Description { get; set; }
-            public DateTime StartTime { get; set; }
+            public String Start { get; set; }
 
-            public TaskStatus TaskStatus { get; set;  }
+            public TaskStatus Status { get; set;  }
 
         }
 
@@ -215,23 +215,23 @@ namespace TaskContainerLib
                     {
                         TaskItemStatus itemStatus = new TaskItemStatus()
                         {
-                            TaskName = item.TaskName,
+                            Name = item.TaskName,
                             Description = item.Description,
-                            StartTime = item.StartTime
+                            Start = item.StartTime.ToString("dd/MM/yyyy HH: mm")
                            
                         };
                         if (item.Task_ == null)
                         {
-                            itemStatus.TaskStatus = TaskStatus.Canceled;
+                            itemStatus.Status = TaskStatus.Canceled;
                         }
                         else
                         {
                             try
                             {
-                                itemStatus.TaskStatus = item.Task_.Status;
+                                itemStatus.Status = item.Task_.Status;
                             } catch ( Exception)
                             {
-                                itemStatus.TaskStatus = TaskStatus.Canceled;
+                                itemStatus.Status = TaskStatus.Canceled;
                             }
                         }
 

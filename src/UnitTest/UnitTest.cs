@@ -24,7 +24,7 @@ namespace UnitTest
             var statuses = taskContainer.GetStatuses();
             foreach (var p in statuses)
             {
-                Console.WriteLine($" task: {p.TaskName}, start time: {p.StartTime} , status: {p.TaskStatus}");
+                Console.WriteLine($" task: {p.Name}, start time: {p.Start} , status: {p.Status}");
             }
             return true;
         }

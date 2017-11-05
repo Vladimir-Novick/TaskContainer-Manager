@@ -51,7 +51,7 @@ namespace TaskContainerLib
         {
             public String Name { get; set; }
             public String Description { get; set; }
-            public String Start { get; set; }
+            public DateTime Start { get; set; }
 
             public TaskStatus Status { get; set;  }
 
@@ -217,7 +217,7 @@ namespace TaskContainerLib
                         {
                             Name = item.TaskName,
                             Description = item.Description,
-                            Start = item.StartTime.ToString("dd/MM/yyyy HH: mm")
+                            Start = item.StartTime
                            
                         };
                         if (item.Task_ == null)

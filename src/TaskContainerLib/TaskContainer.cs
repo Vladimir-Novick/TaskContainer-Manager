@@ -369,6 +369,7 @@ namespace TaskContainerLib
 
                     OnTaskExit(Name);
                 }
+                t1.Dispose();
             });
             String _TaskName = $"Task: {task.Id}";
 

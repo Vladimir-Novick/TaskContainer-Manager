@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime;
 using System.Reflection;
+using System.Threading;
 
 ////////////////////////////////////////////////////////////////////////////
-//	Copyright 2016 - 2017 : Vladimir Novick    https://www.linkedin.com/in/vladimirnovick/  
+//	Copyright 2016 - 2018 : Vladimir Novick    https://www.linkedin.com/in/vladimirnovick/  
 //
 //    NO WARRANTIES ARE EXTENDED. USE AT YOUR OWN RISK. 
 //
@@ -24,7 +25,7 @@ namespace TaskContainerLib
     public class TaskContainerManager
     {
 
-        
+   
 
         /// <summary>
         ///   Specify Task Manager option. Multiple Conditions with  || TaskContainerManager Options
@@ -40,6 +41,8 @@ namespace TaskContainerLib
         public TaskContainerManager()
         {
             OnTaskExit = null;
+
+          
         }
 
         /// <summary>
@@ -267,12 +270,15 @@ namespace TaskContainerLib
         /// <param name="taskName"></param>
         /// <param name="description"></param>
         /// <param name="callBack">   bool myCallBack(string taskName ) </param>
+        /// <param name="MaxTime">   Maximum work time ( ticked )  </param>
         /// <returns></returns>
-        public bool TryAdd(Task task, String taskName = null, String description = null , Func<String,bool> callBack = null)
+        public bool TryAdd(Task task, String taskName = null, String description = null , Func<String,bool> callBack = null,int MaxTime = 0)
         {
+           
+
             task.ContinueWith(t1 =>
             {
-
+                
                  TaskItem outTaskItem = null;
                if ( TasksContainer.TryGetValue(task.Id, out outTaskItem))
                 {
@@ -344,13 +350,12 @@ namespace TaskContainerLib
                 StartTime = DateTime.Now,
                 Description = _description,
                 Callback = callBack,
-                CurrentStatus = "Started"
+                CurrentStatus = "Started",
+                MaxTime = MaxTime
             };
 
-
-
-            List<TaskItem> items = TasksContainer.Values.ToList<TaskItem>();
-            TaskItem item = items.FirstOrDefault(x => x.TaskName == _TaskName);
+         
+            TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == _TaskName);
 
             if (!(item is null)) return false;
 
@@ -360,12 +365,34 @@ namespace TaskContainerLib
             {
                 try
                 {
-                   
-                    task.Start();
 
+                    if (taskItem.MaxTime > 0)
+                    {
+                        Task.WhenAny(task, Task.Delay(taskItem.MaxTime)).ContinueWith(t1 => {
+                            try
+                            {
+                                task.Start();
+                                task.Wait(taskItem.MaxTime);
+                            }
+                            catch (Exception) { }
+                            Remove(task);
+
+                        });
+
+
+                    }
+                    else
+                    {
+
+                        task.Start();
+
+
+                    }
+                    taskItem.StartTime = DateTime.Now;
+                  
                     return true;
                 }
-                catch
+                catch ( Exception ex )
                 {
                     Remove(task);
                     return false;

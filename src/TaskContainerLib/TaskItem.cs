@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TaskContainerLib
@@ -15,6 +16,8 @@ namespace TaskContainerLib
 
         public DateTime StartTime { get; set; }
         private int HashCode { get; set; }
+        public int MaxTime { get; internal set; }
+
 
 
         /// <summary>

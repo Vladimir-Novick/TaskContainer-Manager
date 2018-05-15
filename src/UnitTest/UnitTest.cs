@@ -80,7 +80,8 @@ namespace UnitTest
 
         public static bool CallBackFunction(String taskName)
         {
-            Console.WriteLine($" ***** CallBack : {taskName}");
+            Console.WriteLine($" *****  CallBack : {taskName}");
+            Console.WriteLine($" ****** Task Counter : {taskContainer.Count()}");
             return true;
         }
 
@@ -118,6 +119,36 @@ namespace UnitTest
             taskContainer.WaitAll();  // Wait all scheduled tasks
         }
 
+
+
+        [TestMethod]
+        public void TaskTimeout()
+        {
+            Console.WriteLine("--------------------TaskTimeout --------------------");
+            taskContainer.OnTaskExit = null;
+            taskContainer.Option = TaskContainerManager.Options.None;
+
+            {
+                string taskName = $"Task 20 sec ";
+                Task task = new Task(() => { PrintMessage(1000, taskName); });  // Create Task
+                taskContainer.TryAdd(task, taskName, $"Task Description ", CallBackFunction, 40000);  // Add task to Container . Task will be start automatically
+            }
+
+            {
+                string taskName = $"Task 20 sec 2 ";
+                Task task = new Task(() => { PrintMessage(1000, taskName); });  // Create Task
+                taskContainer.TryAdd(task, taskName, $"Task Description ", CallBackFunction, 40000);  // Add task to Container . Task will be start automatically
+            }
+            {
+                string taskName = $"Task 5 sec ";
+                Task task = new Task(() => { PrintMessage(1000, taskName); });  // Create Task
+                taskContainer.TryAdd(task, taskName, $"Task Description ", CallBackFunction, 2000 );  // Add task to Container . Task will be start automatically
+            }
+            Thread.Sleep(8000);
+            Console.WriteLine($" Count {taskContainer.Count()}");
+
+            taskContainer.WaitAll();  // Wait all scheduled tasks
+        }
 
 
         [TestMethod]

@@ -11,7 +11,6 @@ using System.Threading;
 Copyright (C) 2016-2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick ,
 
     vlad.novick@gmail.com , http://www.sgcombo.com , https://github.com/Vladimir-Novick
-	
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +33,6 @@ SOFTWARE.
 */
 namespace TaskContainerLib
 {
-    
 
     /// <summary>
     ///    Running multiple tasks asynchronously
@@ -42,7 +40,6 @@ namespace TaskContainerLib
     public class TaskContainerManager
     {
 
-   
 
         /// <summary>
         ///   Specify Task Manager option. Multiple Conditions with  || TaskContainerManager Options
@@ -59,14 +56,12 @@ namespace TaskContainerLib
         {
             OnTaskExit = null;
 
-          
         }
 
         /// <summary>
         ///   Add Task Manager option. Multiple Conditions with  || TaskContainerManager Options
         /// </summary>
         public Options Option { private get; set; }
-        
 
         /// <summary>
         ///    Add Task OnExit Function
@@ -76,9 +71,6 @@ namespace TaskContainerLib
 
 
 
-
-
-  
         /// <summary>
         ///   Wait All tasks from container
         /// </summary>
@@ -139,7 +131,7 @@ namespace TaskContainerLib
         }
 
         /// <summary>
-        ///    Get current task status string
+        ///    Get current task status 
         /// </summary>
         /// <param name="taskName"></param>
         public string GetCurrentStatus(string taskName)
@@ -155,7 +147,6 @@ namespace TaskContainerLib
             }
             return "Finished";
         }
-
 
         /// <summary>
         ///    Get all active task
@@ -198,12 +189,10 @@ namespace TaskContainerLib
                     catch (Exception) { }
                 }
 
-              
             }
             catch { }
             return TaskList;
         }
-
 
         /// <summary>
         ///   Wait Any Task
@@ -237,15 +226,15 @@ namespace TaskContainerLib
         /// <summary>
         ///   Check specific task is completed
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="TaskName"></param>
         /// <returns></returns>
-        public bool IsCompleted(String name)
+        public bool IsCompleted(String TaskName)
         {
             try
             {
                 if (TasksContainer.Count > 0)
                 {
-                    TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == name);
+                    TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == TaskName);
                     if (item != null)
                     {
                         return false;
@@ -291,7 +280,12 @@ namespace TaskContainerLib
         /// <returns></returns>
         public bool TryAdd(Task task, String taskName = null, String description = null , Func<String,bool> callBack = null,int MaxTime = 0)
         {
-           
+            if (taskName != null)
+            {
+                TaskItem item_ = TasksContainer.Values.FirstOrDefault(x => x.TaskName == taskName);
+
+                if (!(item_ is null)) return false;
+            }
 
             task.ContinueWith(t1 =>
             {
@@ -308,9 +302,7 @@ namespace TaskContainerLib
                         catch ( Exception ) { }
                     }
 
-
                 }
-
 
                 String Name = Remove(t1);
 
@@ -318,7 +310,6 @@ namespace TaskContainerLib
                 {
                     GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
                 }
-
 
                 if ((TaskContainerManager.Options.GCCollect & this.Option) == TaskContainerManager.Options.GCCollect)
                 {
@@ -336,7 +327,6 @@ namespace TaskContainerLib
 
             String _description = description;
 
-
             int Task_ID = task.Id;
             if (taskName != null)
             {
@@ -353,8 +343,7 @@ namespace TaskContainerLib
                         var name = action.Method.Name;
                         var type = action.Method.DeclaringType.FullName;
                         _description = $"Method: {name} Type: {type}";
-                    
-                        
+
                     } 
                 }
                 catch (Exception) { }
@@ -371,7 +360,6 @@ namespace TaskContainerLib
                 MaxTime = MaxTime
             };
 
-         
             TaskItem item = TasksContainer.Values.FirstOrDefault(x => x.TaskName == _TaskName);
 
             if (!(item is null)) return false;
@@ -382,7 +370,6 @@ namespace TaskContainerLib
             {
                 try
                 {
-
                     if (taskItem.MaxTime > 0)
                     {
                         Task.WhenAny(task, Task.Delay(taskItem.MaxTime)).ContinueWith(t1 => {
@@ -395,21 +382,16 @@ namespace TaskContainerLib
                             Remove(task);
 
                         });
-
-
                     }
                     else
                     {
-
                         task.Start();
-
-
                     }
                     taskItem.StartTime = DateTime.Now;
                   
                     return true;
                 }
-                catch ( Exception ex )
+                catch ( Exception  )
                 {
                     Remove(task);
                     return false;
@@ -417,10 +399,6 @@ namespace TaskContainerLib
             }
             return false;
         }
-
-
-
-
         /// <summary>
         ///    Remove task from container
         /// </summary>

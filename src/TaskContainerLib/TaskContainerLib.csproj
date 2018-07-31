@@ -2,7 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Description />
+    <Description>By using TaskContainerManager, you can start multiple tasks at the different time and process them.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Vladimir Novick, https://github.com/Vladimir-Novick</Authors>
+    <Company>Vladimir Novick,</Company>
+    <Copyright>Vladimir Novick, https://github.com/Vladimir-Novick</Copyright>
+    <PackageLicenseUrl>https://github.com/Vladimir-Novick/TaskContainer-Manager/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Vladimir-Novick/TaskContainer-Manager</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Vladimir-Novick/TaskContainer-Manager</RepositoryUrl>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <Version>1.2.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
 </Project>

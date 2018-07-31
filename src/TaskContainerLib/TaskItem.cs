@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 Copyright (C) 2016-2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick ,
 
     vlad.novick@gmail.com , http://www.sgcombo.com , https://github.com/Vladimir-Novick
-	
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +43,6 @@ namespace TaskContainerLib
         public int MaxTime { get; internal set; }
 
 
-
         /// <summary>
         ///    Callback functions 
         /// </summary>
@@ -58,7 +56,6 @@ namespace TaskContainerLib
             return
                 taskItem.Id == task.Id;
         }
-
 
         public static bool operator !=(TaskItem taskItem, Task task)
         {

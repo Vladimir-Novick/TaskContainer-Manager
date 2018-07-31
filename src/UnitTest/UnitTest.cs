@@ -8,7 +8,6 @@ using TaskContainerLib;
 Copyright (C) 2016-2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick ,
 
     vlad.novick@gmail.com , http://www.sgcombo.com , https://github.com/Vladimir-Novick
-	
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +42,6 @@ namespace UnitTest
             return true;
         }
 
-
         public static bool OnTaskExiFunctiont2(String TaskName)
         {
             var statuses = taskContainer.GetStatuses();
@@ -63,7 +61,6 @@ namespace UnitTest
             }
 
         }
-
 
         private static void PrintMessage(int j)
         {
@@ -102,14 +99,12 @@ namespace UnitTest
             taskContainer.WaitAll();  // Wait all scheduled tasks
         }
 
-
         public static bool CallBackFunction(String taskName)
         {
             Console.WriteLine($" *****  CallBack : {taskName}");
             Console.WriteLine($" ****** Task Counter : {taskContainer.Count()}");
             return true;
         }
-
 
         [TestMethod]
         public void CallBackFunction()
@@ -145,7 +140,6 @@ namespace UnitTest
         }
 
 
-
         [TestMethod]
         public void TaskTimeout()
         {
@@ -174,7 +168,6 @@ namespace UnitTest
 
             taskContainer.WaitAll();  // Wait all scheduled tasks
         }
-
 
         [TestMethod]
         public void OnTaskExit()
@@ -207,7 +200,6 @@ namespace UnitTest
             }
             taskContainer.WaitAll();  // Wait all scheduled tasks
         }
-
 
         [TestMethod]
         public void OnTaskStatuses()

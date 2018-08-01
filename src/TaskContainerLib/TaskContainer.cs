@@ -270,6 +270,22 @@ namespace TaskContainerLib
         }
 
         /// <summary>
+        ///  Checking if task is exist on the container
+        /// </summary>
+        /// <param name="taskName"></param>
+        /// <returns></returns>
+        public bool isExist(String taskName)
+        {
+            if (taskName != null)
+            {
+                TaskItem item_ = TasksContainer.Values.FirstOrDefault(x => x.TaskName == taskName);
+                if ((item_ is null)) return false;
+                return true;
+            }
+            throw new ArgumentNullException(taskName);
+        }
+
+        /// <summary>
         ///    Add a task to container
         /// </summary>
         /// <param name="task"></param>

@@ -16,13 +16,24 @@ Example:
        
         public static bool OnTaskExiFunctiont(String TaskName)
         {
-            Console.WriteLine($"Task Completed : {TaskName} , Task Container count {taskContainer.Count()}");
+            Console.WriteLine($"Task Completed : {TaskName} ");
             return true;
         }
 
+2) Task exit callback function:
+      A callback function is executed all time if specific task finished.
+
+        public static bool CallBackFunction(String taskName)
+        {
+            Console.WriteLine($" *****  CallBack : {taskName}");
+            return true;
+        }
+
+
 ####   Using:
 
-            taskContainer.OnTaskExit = null;
+            TaskContainerManager taskContainer = new TaskContainerManager();
+            taskContainer.OnTaskExit = OnTaskExiFunctiont;
             taskContainer.Option = TaskContainerManager.Options.None;
 
             for (int i = 1; i < 5; i++)
@@ -30,14 +41,10 @@ Example:
                 int ii = i;
                 string taskName = $"Task {ii}";
                 Task task = new Task(() => { PrintMessage(ii, taskName); });  // Create Task
-		 // Add task to Container . Task will be start automatically
+		            // Add task to Container . Task will be start automatically
                 taskContainer.TryAdd(task, taskName, $"Task Description {i}", CallBackFunction); 
             }
             taskContainer.WaitAll();  // Wait all scheduled tasks
-
-
-
-
 
 	
 

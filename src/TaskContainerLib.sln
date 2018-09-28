@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskContainerLib", "TaskContainerLib\TaskContainerLib.csproj", "{4DB70013-87AF-4D79-81AA-EA85BABC1955}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskContainerLib", "TaskContainerLib\TaskContainerLib.csproj", "{4DB70013-87AF-4D79-81AA-EA85BABC1955}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{A2696546-6B6A-456C-9723-A997A9A86939}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{A2696546-6B6A-456C-9723-A997A9A86939}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{18267A57-EB68-45B8-A899-3C56A6D6E09B}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

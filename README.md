@@ -21,7 +21,7 @@ Example:
         }
 
 2) Task exit callback function:
-      A callback function is executed all time if specific task finished.
+      A callback function is executed if specific task finished.
 
         public static bool CallBackFunction(String taskName)
         {

@@ -5,11 +5,10 @@ By using TaskContainerManager, you can start multiple tasks at the different tim
 
 You must be including TaskContainerManager in an existing .NET Core application without installation additional components
 
-Example:
 
- ### Example:
+ ## Example:
 
-####   Create callback functions:
+###   Create callback functions:
 
 1) Global callback function:
        A callback function is executed after any task is finished
@@ -30,7 +29,7 @@ Example:
         }
 
 
-####   Using:
+###   Using:
 
             TaskContainerManager taskContainer = new TaskContainerManager();
             taskContainer.OnTaskExit = OnTaskExiFunctiont;
@@ -46,7 +45,78 @@ Example:
             }
             taskContainer.WaitAll();  // Wait all scheduled tasks
 
-	
+ ## API Reference:	
+
+This is brief API reference is organized by method type.
+
+#### TryAdd
+
+Add a task to container
+
+     public bool TryAdd(Task task, String taskName = null, String description = null , Func<String,bool> callBack = null)
+
+#### WaitAll
+
+Wait All running tasks from container
+
+
+      public void WaitAll(List<String> taskNames)
+
+      public void WaitAll()
+
+
+#### SetCurrentStatus
+
+Set Task Status 
+
+        public void SetCurrentStatus(string taskName, String CurrentStatus)
+
+
+#### GetCurrentStatus
+
+ Get current task status 
+
+        public string GetCurrentStatus(string taskName)
+
+#### GetStatuses
+
+ Get active task's statuses
+
+        public List<TaskItemStatus> GetStatuses()
+
+#### WaitAny
+
+Wait Any Task
+
+        public void WaitAny()
+
+#### Count
+
+Get Task Count
+
+       public int Count()
+
+#### IsCompleted
+
+Check specific task is completed
+
+        public bool IsCompleted(String TaskName)
+
+#### Status
+
+Get task status by task name
+
+        public TaskStatus Status(String TaskName)
+
+#### isExist
+
+ Checking if task is exist on the container
+
+        public bool isExist(String taskName)
+
+
+# Copyright
+
 
 Copyright (C) 2016-2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick , 
 

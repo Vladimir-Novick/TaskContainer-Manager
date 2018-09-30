@@ -36,7 +36,8 @@ namespace TaskContainerLib
 
     /// <summary>
     ///    Running multiple tasks asynchronously
-    /// </summary>
+    ///    By using TaskContainerManager, you can start multiple tasks at the different time and process them. 
+    ///    TaskContainerManager is a .NET Core library. 
     public class TaskContainerManager
     {
 
@@ -72,7 +73,7 @@ namespace TaskContainerLib
 
 
         /// <summary>
-        ///   Wait All tasks from container
+        ///   Wait All running tasks from container
         /// </summary>
         public void WaitAll()
         {
@@ -90,16 +91,16 @@ namespace TaskContainerLib
         {
             try
             {
-
                 List<Task> TaskList = new List<Task>();
-                foreach (TaskItem item in TasksContainer.Values)
+                var items = TasksContainer.Values.ToList();
+                foreach (TaskItem item in items)
                 {
                     try
                     {
                         var ok = taskNames.Find(m => m == item.TaskName);
                         if (ok != null)
                         {
-                            if (item.Task_ != null)
+                            if (IsRunning(item.Task_))
                             {
                                 TaskList.Add(item.Task_);
                             }
@@ -107,7 +108,6 @@ namespace TaskContainerLib
                     }
                     catch (Exception) { }
                 }
-
                 Task.WaitAll(TaskList.ToArray());
             }
             catch { }
@@ -149,7 +149,7 @@ namespace TaskContainerLib
         }
 
         /// <summary>
-        ///    Get all active task
+        ///    Get active task's statuses
         /// </summary>
         /// <returns></returns>
         public List<TaskItemStatus> GetStatuses()
@@ -157,8 +157,8 @@ namespace TaskContainerLib
             List<TaskItemStatus> TaskList = new List<TaskItemStatus>();
             try
             {
-              
-                foreach (var item in TasksContainer.Values)
+                var items = TasksContainer.Values.ToList();
+                foreach (var item in items)
                 {
                     try
                     {
@@ -194,6 +194,20 @@ namespace TaskContainerLib
             return TaskList;
         }
 
+        private bool IsRunning(Task item)
+        {
+            try
+            {
+                if (item == null) return false;
+                if (item.Status == TaskStatus.Canceled) return false;
+                if (item.Status == TaskStatus.Created) return false;
+                if (item.Status == TaskStatus.Faulted) return false;
+            }
+            catch (Exception) { return false; }
+            return true;
+        }
+
+
         /// <summary>
         ///   Wait Any Task
         /// </summary>
@@ -201,10 +215,14 @@ namespace TaskContainerLib
         {
             try
             {
+                var items = TasksContainer.Values.ToList();
                 List<Task> TaskList = new List<Task>();
-                foreach (var item in TasksContainer.Values)
+                foreach (var item in items)
                 {
-                    TaskList.Add(item.Task_);
+                    if (IsRunning(item?.Task_))
+                    {
+                        TaskList.Add(item.Task_);
+                    }
                 }
 
                 Task.WaitAny(TaskList.ToArray());
@@ -415,12 +433,8 @@ namespace TaskContainerLib
             }
             return false;
         }
-        /// <summary>
-        ///    Remove task from container
-        /// </summary>
-        /// <param name="task"></param>
-        /// <returns>TaskItem</returns>
-        public String Remove(Task task)
+
+        private String Remove(Task task)
         {
             TaskItem outItem = null;
             String TaskName = null;
